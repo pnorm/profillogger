@@ -1,0 +1,6 @@
+date,level,msg
+2021-07-12 08:01:41.883959,INFO,Some info message
+2021-07-12 08:01:41.884676,WARNING,Some warning message
+2021-07-12 08:01:41.885451,DEBUG,Some debug message
+2021-07-12 08:01:41.886186,CRITICAL,Some critical message
+2021-07-12 08:01:41.886903,ERROR,Some error message
