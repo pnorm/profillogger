@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import json
 import os
+import sqlite3
 from typing import Dict, List
 
 from date_conversion import datetime_to_str
@@ -41,7 +42,6 @@ class JsonHandler(Handler):
         with open(self.name, 'w') as f:
             json.dump([], f)
 
-
     def save_msg(self, log_entry: 'LogEntry') -> None:
         """ Save message to the JSON File. """
         data = self.read_msg()
@@ -50,7 +50,7 @@ class JsonHandler(Handler):
         with open(self.name, 'w') as f:
             json.dump(data, f, default=datetime_to_str)
 
-    def read_msg(self) -> List[LogEntry]:
+    def read_msg(self) -> List[Dict]:
         """ Reads all logs from the file. """
         with open(self.name, 'r+') as f:
             data = json.load(f)
@@ -75,7 +75,7 @@ class CSVHandler(Handler):
             for log in logs:
                 writer.writerow(log)
 
-    def read_msg(self) -> List[LogEntry]:
+    def read_msg(self) -> List[Dict]:
         """ Reads all logs from the file. """
         with open(self.name, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -90,15 +90,34 @@ class SQLLiteHandler(Handler):
     Handler that stores and retrieves the list of LogEntry in sqlite
     database.
     """
-    # def save_msg(self, log_entry: 'LogEntry'):
-    #     pass
-    pass
+    def _create_file(self) -> None:
+        conn = sqlite3.connect(self.name)
+        c = conn.cursor()
+        c.execute(""" CREATE TABLE logs (
+                        date text,
+                        level text,
+                        msg text) """)
+        conn.commit()
+        conn.close()
 
+    def save_msg(self, log_entry: 'LogEntry') -> None:
+        conn = sqlite3.connect(self.name)
+        c = conn.cursor()
 
-class FileHandler(Handler):
-    """
-    Handler that stores and retrieves the list of LogEntry in text file.
-    """
-    # def save_msg(self, log_entry: 'LogEntry'):
-    #     pass
-    pass
+        c.execute("INSERT INTO logs VALUES (?,?,?)",
+                    (datetime_to_str(log_entry.date), log_entry.level,
+                     log_entry.msg))
+        conn.commit()
+        conn.close()
+
+    def read_msg(self) -> List[LogEntry]:
+        conn = sqlite3.connect(self.name)
+        c = conn.cursor()
+
+        query = c.execute("SELECT * FROM logs")
+        colname = [d[0] for d in query.description]
+        result = [dict(zip(colname, r)) for r in query.fetchall()]
+
+        conn.commit()
+        conn.close()
+        return result
