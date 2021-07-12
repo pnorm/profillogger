@@ -17,7 +17,13 @@ $ git clone https://github.com/pnorm/profillogger.git
 ```
 
 ### 3. Examples how to use script
- - Example 1
+ - Example 1 - Terminal
+
+```sh
+(env):$ python test.py
+```
+
+ - Example 2 - Python script
 ```py
 from datetime import datetime
 from pprint import pprint
