@@ -1,6 +1,7 @@
 ## Recruitment Task - backend internship 06-2021
 
-Hi! My name is Paweł Normann
+Hi! My name is Paweł Normann.
+
 This is my solution of the recruitment task posted at
 https://git.profil-software.com/recruitment-06-2021/recruitment-task-backend-internship
 
