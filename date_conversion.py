@@ -6,6 +6,7 @@ def datetime_to_str(o) -> str:
     if isinstance(o, datetime):
         return o.isoformat()
 
+
 def str_to_datetime(log_date: str) -> datetime:
     """ String to datetime object conversion. """
     try:

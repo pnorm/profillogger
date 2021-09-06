@@ -1,5 +1,4 @@
 import csv
-from datetime import datetime
 import json
 import os
 import sqlite3
@@ -13,6 +12,7 @@ class Handler:
     """
     Handler that stores and retrieves the list of LogEntry.
     """
+
     def __init__(self, name: str) -> None:
         self.name = name
         if self.name not in os.listdir():
@@ -20,10 +20,11 @@ class Handler:
 
     def _create_file(self) -> None:
         """ Creates empty file. """
-        with open(self.name, 'w') as f:
+        with open(self.name, 'w'):
             pass
 
-    def convert_to_objects(self, log_entries: List[Dict]) -> List[LogEntry]:
+    @staticmethod
+    def convert_to_objects(log_entries: List[Dict]) -> List[LogEntry]:
         """ Convert List[Dict] to List[LogEntry]. """
         log_objects = []
         for log_entry in log_entries:
@@ -33,11 +34,15 @@ class Handler:
             log_objects.append(log_object)
         return log_objects
 
+    def read_msg(self):
+        pass
+
 
 class JsonHandler(Handler):
     """
     Handler that stores and retrieves the list of LogEntry in a JSON file.
     """
+
     def _create_file(self) -> None:
         with open(self.name, 'w') as f:
             json.dump([], f)
@@ -61,13 +66,14 @@ class CSVHandler(Handler):
     """
     Handler that stores and retrieves the list of LogEntry in a CSV file.
     """
+
     def save_msg(self, log_entry: 'LogEntry') -> None:
         """ Save message to the CSV File. """
         logs = self.read_msg()
 
-        with open(self.name, 'w', newline='') as csvfile:
+        with open(self.name, 'w', newline='') as csv_file:
             fieldnames = ['date', 'level', 'msg']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
             logs.append(log_entry.__dict__)
 
@@ -77,8 +83,8 @@ class CSVHandler(Handler):
 
     def read_msg(self) -> List[Dict]:
         """ Reads all logs from the file. """
-        with open(self.name, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
+        with open(self.name, newline='') as csv_file:
+            reader = csv.DictReader(csv_file)
             logs = []
             for log in reader:
                 logs.append(log)
@@ -90,6 +96,7 @@ class SQLLiteHandler(Handler):
     Handler that stores and retrieves the list of LogEntry in sqlite
     database.
     """
+
     def _create_file(self) -> None:
         conn = sqlite3.connect(self.name)
         c = conn.cursor()
@@ -105,18 +112,18 @@ class SQLLiteHandler(Handler):
         c = conn.cursor()
 
         c.execute("INSERT INTO logs VALUES (?,?,?)",
-                    (datetime_to_str(log_entry.date), log_entry.level,
-                     log_entry.msg))
+                  (datetime_to_str(log_entry.date), log_entry.level,
+                   log_entry.msg))
         conn.commit()
         conn.close()
 
-    def read_msg(self) -> List[LogEntry]:
+    def read_msg(self) -> List[dict]:
         conn = sqlite3.connect(self.name)
         c = conn.cursor()
 
         query = c.execute("SELECT * FROM logs")
-        colname = [d[0] for d in query.description]
-        result = [dict(zip(colname, r)) for r in query.fetchall()]
+        col_name = [d[0] for d in query.description]
+        result = [dict(zip(col_name, r)) for r in query.fetchall()]
 
         conn.commit()
         conn.close()

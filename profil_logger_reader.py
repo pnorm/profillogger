@@ -1,6 +1,5 @@
-from datetime import datetime
-from pprint import pprint
 import re
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from date_conversion import str_to_datetime
@@ -11,6 +10,7 @@ from profil_logger import LogEntry
 
 class ProfilLoggerReader:
     """ Class for reading and filtering logs. """
+
     def __init__(self, handler: Handler):
         self.handler = handler
         self.data = self.handler.read_msg()
@@ -50,9 +50,9 @@ class ProfilLoggerReader:
 
         return filtered_logs
 
-    def groupby_level(self, start_date: Optional[datetime] = None,
-                      end_date: Optional[datetime] = None
-                     ) -> Dict[str, List[LogEntry]]:
+    def group_by_level(self, start_date: Optional[datetime] = None,
+                       end_date: Optional[datetime] = None
+                       ) -> Dict[str, List[LogEntry]]:
         """
         Group logs by level. If any datetime is given, filter logs according to
         that datetime.
@@ -61,7 +61,7 @@ class ProfilLoggerReader:
 
         grouped_logs = {
             "info": [], "warning": [], "debug": [], "critical": [], "error": []
-            }
+        }
         for log in self.converted_data:
             converted_date = str_to_datetime(log.date)
             if (start_date < converted_date) and (end_date > converted_date):
@@ -71,7 +71,7 @@ class ProfilLoggerReader:
 
     def groupby_month(self, start_date: Optional[datetime] = None,
                       end_date: Optional[datetime] = None
-                     )-> Dict[str, List[LogEntry]]:
+                      ) -> Dict[str, List[LogEntry]]:
         """
         Group logs by month. If any datetime is given, filter logs according to
         that datetime.

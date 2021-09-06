@@ -24,6 +24,7 @@ $ git clone https://github.com/pnorm/profillogger.git
 ```
 
  - Example 2 - Python script
+
 ```py
 from datetime import datetime
 from pprint import pprint
@@ -31,7 +32,6 @@ from pprint import pprint
 from handlers import JsonHandler, CSVHandler, SQLLiteHandler, FileHandler
 from profil_logger import ProfilLogger
 from profil_logger_reader import ProfilLoggerReader
-
 
 json_handler = JsonHandler("logs.json")
 csv_handler = CSVHandler("logs.csv")
@@ -60,7 +60,7 @@ pprint(log_reader.find_by_regex("[gr]{1} message"))
 pprint(log_reader.find_by_regex("[gr]{1} message", datetime(2021, 7, 12), datetime(2021, 7, 13)))
 
 # Groupby level
-pprint(log_reader.groupby_level())
+pprint(log_reader.group_by_level())
 
 # Groupby month
 pprint(log_reader.groupby_month())

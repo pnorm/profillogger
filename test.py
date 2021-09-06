@@ -33,8 +33,8 @@ pprint(log_reader.find_by_text("info message", datetime(2021, 7, 11), datetime(2
 pprint(log_reader.find_by_regex("[gr]{1} message"))
 pprint(log_reader.find_by_regex("[gr]{1} message", datetime(2021, 7, 12), datetime(2021, 7, 13)))
 
-# Groupby level
-pprint(log_reader.groupby_level())
+# Group by level
+pprint(log_reader.group_by_level())
 
-# Groupby month
+# Group by month
 pprint(log_reader.groupby_month())
