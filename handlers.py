@@ -2,13 +2,14 @@ import csv
 import json
 import os
 import sqlite3
+from abc import ABC, abstractmethod
 from typing import Dict, List
 
 from date_conversion import datetime_to_str
 from log_entry import LogEntry
 
 
-class Handler:
+class Handler(ABC):
     """
     Handler that stores and retrieves the list of LogEntry.
     """
@@ -18,10 +19,9 @@ class Handler:
         if self.name not in os.listdir():
             self._create_file()
 
+    @abstractmethod
     def _create_file(self) -> None:
-        """ Creates empty file. """
-        with open(self.name, 'w'):
-            pass
+        pass
 
     @staticmethod
     def convert_to_objects(log_entries: List[Dict]) -> List[LogEntry]:
@@ -34,7 +34,12 @@ class Handler:
             log_objects.append(log_object)
         return log_objects
 
-    def read_msg(self):
+    @abstractmethod
+    def read_msg(self) -> None:
+        pass
+
+    @abstractmethod
+    def save_msg(self, log_entry: 'LogEntry') -> None:
         pass
 
 
@@ -66,6 +71,11 @@ class CSVHandler(Handler):
     """
     Handler that stores and retrieves the list of LogEntry in a CSV file.
     """
+
+    def _create_file(self) -> None:
+        """ Creates empty file. """
+        with open(self.name, 'w'):
+            pass
 
     def save_msg(self, log_entry: 'LogEntry') -> None:
         """ Save message to the CSV File. """
