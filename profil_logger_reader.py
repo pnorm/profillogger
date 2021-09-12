@@ -69,9 +69,9 @@ class ProfilLoggerReader:
 
         return grouped_logs
 
-    def groupby_month(self, start_date: Optional[datetime] = None,
-                      end_date: Optional[datetime] = None
-                      ) -> Dict[str, List[LogEntry]]:
+    def group_by_month(self, start_date: Optional[datetime] = None,
+                       end_date: Optional[datetime] = None
+                       ) -> Dict[str, List[LogEntry]]:
         """
         Group logs by month. If any datetime is given, filter logs according to
         that datetime.

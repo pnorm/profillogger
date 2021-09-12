@@ -37,4 +37,4 @@ pprint(log_reader.find_by_regex("[gr]{1} message", datetime(2021, 7, 12), dateti
 pprint(log_reader.group_by_level())
 
 # Group by month
-pprint(log_reader.groupby_month())
+pprint(log_reader.group_by_month())
