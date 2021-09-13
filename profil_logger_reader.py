@@ -11,10 +11,21 @@ from profil_logger import LogEntry
 class ProfilLoggerReader:
     """ Class for reading and filtering logs. """
 
-    def __init__(self, handler: Handler):
+    def __init__(self, handler: 'Handler'):
         self.handler = handler
         self.data = self.handler.read_msg()
         self.converted_data = self.handler.convert_to_objects(self.data)
+
+    def filter_logs_by_date(self, start_date: datetime, end_date: datetime) \
+            -> List['LogEntry']:
+        """ Filter log entries by start_date and end_date. """
+        filtered_logs = []
+        for log in self.converted_data:
+            converted_date = str_to_datetime(log.date)
+            if (start_date < converted_date) and (end_date > converted_date):
+                filtered_logs.append(log)
+
+        return filtered_logs
 
     def find_by_text(self, text: str, start_date: Optional[datetime] = None,
                      end_date: Optional[datetime] = None) -> List[LogEntry]:
@@ -22,14 +33,16 @@ class ProfilLoggerReader:
         Find log entries that contain given text. If any datetime is given,
         filter logs according to that datetime.
         """
+        # Check if start_date before end_date
         start_date, end_date = start_before_end(start_date, end_date)
 
+        # Filter logs by date
+        filtered_logs_by_date = self.filter_logs_by_date(start_date, end_date)
+
         filtered_logs = []
-        for log in self.converted_data:
+        for log in filtered_logs_by_date:
             if log.msg.find(text) != -1:
-                converted_date = str_to_datetime(log.date)
-                if (start_date < converted_date) and (end_date > converted_date):
-                    filtered_logs.append(log)
+                filtered_logs.append(log)
 
         return filtered_logs
 
@@ -39,14 +52,16 @@ class ProfilLoggerReader:
         Finds logs by a given regexp. If any datetime is given, filter logs
         according to that datetime.
         """
+        # Check if start_date before end_date
         start_date, end_date = start_before_end(start_date, end_date)
 
+        # Filter logs by date
+        filtered_logs_by_date = self.filter_logs_by_date(start_date, end_date)
+
         filtered_logs = []
-        for log in self.converted_data:
+        for log in filtered_logs_by_date:
             if re.search(regex, log.msg):
-                converted_date = str_to_datetime(log.date)
-                if (start_date < converted_date) and (end_date > converted_date):
-                    filtered_logs.append(log)
+                filtered_logs.append(log)
 
         return filtered_logs
 
@@ -57,15 +72,17 @@ class ProfilLoggerReader:
         Group logs by level. If any datetime is given, filter logs according to
         that datetime.
         """
+        # Check if start_date before end_date
         start_date, end_date = start_before_end(start_date, end_date)
+
+        # Filter logs by date
+        filtered_logs_by_date = self.filter_logs_by_date(start_date, end_date)
 
         grouped_logs = {
             "info": [], "warning": [], "debug": [], "critical": [], "error": []
         }
-        for log in self.converted_data:
-            converted_date = str_to_datetime(log.date)
-            if (start_date < converted_date) and (end_date > converted_date):
-                grouped_logs[log.level.lower()].append(log)
+        for log in filtered_logs_by_date:
+            grouped_logs[log.level.lower()].append(log)
 
         return grouped_logs
 
@@ -76,16 +93,19 @@ class ProfilLoggerReader:
         Group logs by month. If any datetime is given, filter logs according to
         that datetime.
         """
+        # Check if start_date before end_date
         start_date, end_date = start_before_end(start_date, end_date)
 
+        # Filter logs by date
+        filtered_logs_by_date = self.filter_logs_by_date(start_date, end_date)
+
         grouped_logs = {}
-        for log in self.converted_data:
+        for log in filtered_logs_by_date:
             converted_date = str_to_datetime(log.date)
-            if (start_date < converted_date) and (end_date > converted_date):
-                group = f"{converted_date.year}-{converted_date.month}"
-                try:
-                    grouped_logs[group].append(log)
-                except KeyError:
-                    grouped_logs[group] = [log]
+            group = f"{converted_date.year}-{converted_date.month}"
+            try:
+                grouped_logs[group].append(log)
+            except KeyError:
+                grouped_logs[group] = [log]
 
         return grouped_logs

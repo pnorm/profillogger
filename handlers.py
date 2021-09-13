@@ -35,7 +35,7 @@ class Handler(ABC):
         return log_objects
 
     @abstractmethod
-    def read_msg(self) -> None:
+    def read_msg(self) -> List[Dict]:
         pass
 
     @abstractmethod
